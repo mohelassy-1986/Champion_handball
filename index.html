@@ -102,7 +102,52 @@ function positionChanges(table){
 }
 const form=x=>x.slice(-5).map(v=>`<span class="pill ${v}">${v}</span>`).join('')||'-';
 function upcomingGame(){return matches.find(m=>(m.home===SETTINGS.champion||m.away===SETTINGS.champion)&&m.hs===null)}
-function render(){const table=standings(),movement=positionChanges(table),pos=table.findIndex(x=>x.team===SETTINGS.champion),c=table[pos]||{pts:0,p:0,gf:0,ga:0,form:[]};const qualified=pos>=0&&pos<3,third=table[2]||{pts:0,gf:0,ga:0},pointsToQualify=Math.max(0,third.pts-c.pts),goalsToQualify=Math.max(0,(third.gf-third.ga)-(c.gf-c.ga));const qualificationDetail=qualified?`Position ${pos+1} · Top 3 qualify`:pointsToQualify>0?`Need ${pointsToQualify} point${pointsToQualify===1?'':'s'} to match P3`:`Need ${goalsToQualify} goal${goalsToQualify===1?'':'s'} in goal difference`;$('kpis').innerHTML=`<div class="card kpi"><label>Position</label><strong>${pos+1}</strong><small>Group 1</small></div><div class="card kpi"><label>Points</label><strong>${c.pts}</strong><small>${c.p} played</small></div><div class="card kpi"><label>Goal Difference</label><strong>${c.gf-c.ga>0?'+':''}${c.gf-c.ga}</strong><small>${c.gf} GF · ${c.ga} GA</small></div><div class="card kpi"><label>Recent Form</label><div>${form(c.form)}</div><small>Last matches</small></div><div class="card kpi"><label>Qualification</label><strong>${qualified?'✅ QUALIFIED':'❌ NOT QUALIFIED'}</strong><small>${pos>=0?qualificationDetail:'Position unavailable'}</small></div>`;const next=upcomingGame();$('next').innerHTML=next?card(next):'<div class="card kpi">No upcoming fixture</div>';$('latest').innerHTML=matches.filter(m=>m.hs!==null).slice(-4).reverse().map(card).join('');$('champMatches').innerHTML=matches.filter(m=>m.home===SETTINGS.champion||m.away===SETTINGS.champion).map(card).join('');renderFiltered();$('standingBody').innerHTML=table.map((t,i)=>`<tr class="${t.team===SETTINGS.champion?'champ':''}"><td>${i+1}</td><td title="${movement[t.team].label}" aria-label="${movement[t.team].label}">${movement[t.team].html}</td><td class="name"><div class="standing">${logo(t.team)}<strong>${t.team}</strong></div></td><td>${t.p}</td><td>${t.w}</td><td>${t.d}</td><td>${t.l}</td><td>${t.gf}</td><td>${t.ga}</td><td>${t.gf-t.ga>0?'+':''}${t.gf-t.ga}</td><td>${form(t.form)}</td><td><strong>${t.pts}</strong></td></tr>`).join('');configureScoreboard(next)}
+function render(){const table=standings(),movement=positionChanges(table),pos=table.findIndex(x=>x.team===SETTINGS.champion),c=table[pos]||{pts:0,p:0,gf:0,ga:0,form:[]};const qualified=pos>=0&&pos<3,third=table[2]||{pts:0,gf:0,ga:0},pointsToQualify=Math.max(0,third.pts-c.pts),goalsToQualify=Math.max(0,(third.gf-third.ga)-(c.gf-c.ga));const qualificationDetail=qualified?`Position ${pos+1} · Top 3 qualify`:pointsToQualify>0?`Need ${pointsToQualify} point${pointsToQualify===1?'':'s'} to match P3`:`Need ${goalsToQualify} goal${goalsToQualify===1?'':'s'} in goal difference`;$('kpis').innerHTML=`<div class="card kpi"><label>Position</label><strong>${pos+1}</strong><small>Group 1</small></div><div class="card kpi"><label>Points</label><strong>${c.pts}</strong><small>${c.p} played</small></div><div class="card kpi"><label>Goal Difference</label><strong>${c.gf-c.ga>0?'+':''}${c.gf-c.ga}</strong><small>${c.gf} GF · ${c.ga} GA</small></div><div class="card kpi"><label>Recent Form</label><div>${form(c.form)}</div><small>Last matches</small></div><div class="card kpi"><label>Qualification</label><strong>${qualified?'✅ QUALIFIED':'❌ NOT QUALIFIED'}</strong><small>${pos>=0?qualificationDetail:'Position unavailable'}</small></div>`;const next=upcomingGame();
+
+if(next){
+
+ const homeTeam=table.find(t=>t.team===next.home);
+ const awayTeam=table.find(t=>t.team===next.away);
+
+ $('next').innerHTML=`
+ <article class="card match">
+
+   <div class="meta">
+      <span>${next.round} · ${next.date}</span>
+      <span dir="rtl">${next.venue}</span>
+   </div>
+
+   <div class="teams">
+
+      <div class="team" style="flex-direction:column;align-items:flex-end;text-align:right">
+         ${logo(next.home)}
+         <span>${next.home}</span>
+         <div style="margin-top:6px">
+            ${form(homeTeam?.form || [])}
+         </div>
+      </div>
+
+      <div class="score-chip">
+         ${next.time || 'TBD'}
+      </div>
+
+      <div class="team" style="flex-direction:column;text-align:left">
+         ${logo(next.away)}
+         <span>${next.away}</span>
+         <div style="margin-top:6px">
+            ${form(awayTeam?.form || [])}
+         </div>
+      </div>
+
+   </div>
+
+ </article>
+ `;
+}
+else{
+ $('next').innerHTML =
+ '<div class="card kpi">No upcoming fixture</div>';
+};$('latest').innerHTML=matches.filter(m=>m.hs!==null).slice(-4).reverse().map(card).join('');$('champMatches').innerHTML=matches.filter(m=>m.home===SETTINGS.champion||m.away===SETTINGS.champion).map(card).join('');renderFiltered();$('standingBody').innerHTML=table.map((t,i)=>`<tr class="${t.team===SETTINGS.champion?'champ':''}"><td>${i+1}</td><td title="${movement[t.team].label}" aria-label="${movement[t.team].label}">${movement[t.team].html}</td><td class="name"><div class="standing">${logo(t.team)}<strong>${t.team}</strong></div></td><td>${t.p}</td><td>${t.w}</td><td>${t.d}</td><td>${t.l}</td><td>${t.gf}</td><td>${t.ga}</td><td>${t.gf-t.ga>0?'+':''}${t.gf-t.ga}</td><td>${form(t.form)}</td><td><strong>${t.pts}</strong></td></tr>`).join('');configureScoreboard(next)}
 function renderFiltered(){const q=$('search').value.trim().toLowerCase(),r=$('round').value;const filtered=matches.filter(m=>(r==='ALL'||m.round===r)&&(m.home+' '+m.away+' '+m.venue).toLowerCase().includes(q));$('matches').innerHTML=filtered.length?filtered.map(card).join(''):'<div class="card kpi"><strong>No matches found</strong><small>Try another team, venue, or round.</small></div>'}
 async function loadData(){const st=$('status');st.textContent='Syncing Google Sheets';try{const res=await fetch(SETTINGS.googleSheetCsv+(SETTINGS.googleSheetCsv.includes('?')?'&':'?')+'t='+Date.now(),{cache:'no-store'});if(!res.ok)throw new Error('HTTP '+res.status);matches=parseMatches(parseCsv(await res.text()));if(!matches.length)throw new Error('No match rows');localStorage.setItem('champData',JSON.stringify(matches));render();st.textContent='Live · Updated '+new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}catch(err){const saved=localStorage.getItem('champData');if(saved){matches=JSON.parse(saved);render();st.textContent='Offline · Saved Google Sheets data'}else st.textContent='Unable to load Google Sheets data'}}
 function switchTab(id){document.querySelectorAll('.panel').forEach(x=>x.classList.toggle('active',x.id===id));document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===id));window.scrollTo(0,0)}
