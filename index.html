@@ -25,16 +25,24 @@ body.dark{--bg:#0c1421;--card:#142033;--card2:#1b2a40;--text:#f7f9fc;--muted:#9e
 .summary-photo-wrap{display:grid;gap:12px;justify-items:center}.summary-photo{display:block;width:min(100%,420px);height:auto;border-radius:18px;box-shadow:0 18px 45px rgba(0,0,0,.34);background:#0f172a}.summary-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}.summary-actions .tool{min-width:135px}.modal-box.summary-modal{width:min(500px,100%);max-height:94dvh;overflow:auto}
 @media(max-width:520px){.modal{padding:8px}.modal-box.summary-modal{padding:10px;border-radius:13px}.summary-photo{width:100%}.summary-actions{width:100%}.summary-actions .tool{flex:1 1 130px;font-size:12px}}
 
+/* Icon-only tab buttons */
+.icon-tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;padding:10px 12px;background:var(--bg);border:0;overflow:visible}
+.icon-tabs .tab{width:100%;height:48px;padding:0;display:grid;place-items:center;border:1px solid var(--line);border-radius:13px;background:var(--card);color:var(--muted);box-shadow:var(--shadow)}
+.icon-tabs .tab svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.icon-tabs .tab.active{background:var(--brand);border-color:var(--brand);color:#fff;box-shadow:0 4px 12px color-mix(in srgb,var(--brand) 25%,transparent)}
+.icon-tabs .tab.active:after{display:none}
 /* Form only on Overview next fixture */
+.next-fixture-card .teams{padding-bottom:7px}
 .next-fixture-card .fixture-form{display:grid;grid-template-columns:1fr 62px 1fr;padding:0 10px 10px}
 .next-fixture-card .home-form{grid-column:1;text-align:right}.next-fixture-card .away-form{grid-column:3;text-align:left}
 .next-fixture-card .fixture-form .pill{width:19px;height:19px;border-radius:5px;font-size:.57rem;margin:1px}
+@media(max-width:420px){.icon-tabs{gap:7px;padding:9px 8px}.icon-tabs .tab{height:46px}.next-fixture-card .fixture-form{grid-template-columns:1fr 58px 1fr}}
 </style>
 </head>
 <body>
 <div class="app">
 <header><div class="brand"><img src="icon-192.png" alt="Federation logo"><div><h1>Egyptian Handball Championship 2026/2027</h1><p>Boys Born 2016 · Stage 1 · Group 1</p><div id="status" class="status">Loading Google Sheets data</div></div></div><div class="actions"><button class="btn" id="refreshBtn">Refresh</button><button class="btn" id="themeBtn">Light / Dark</button><select class="btn app-theme-select" id="appTheme" aria-label="App color"><option value="red">🔴 Red</option><option value="blue">🔵 Blue</option><option value="green">🟢 Green</option><option value="purple">🟣 Purple</option><option value="orange">🟠 Orange</option><option value="black">⚫ Black</option></select></div></header>
-<nav class="tabs" id="tabs"><button class="tab active" data-tab="overview">Overview</button><button class="tab" data-tab="group">Group Matches</button><button class="tab" data-tab="champion">Champion Matches</button><button class="tab" data-tab="standings">Standings</button><button class="tab" data-tab="scoreboard">Scoreboard</button></nav>
+<nav class="tabs icon-tabs" id="tabs" aria-label="App sections"><button class="tab active" data-tab="overview" aria-label="Overview" title="Overview"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5v8h-6v-6H9v6H3z"/></svg></button><button class="tab" data-tab="group" aria-label="Group matches" title="Group matches"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v16H5zM8 2v4M16 2v4M5 9h14M8 13h2M14 13h2M8 17h2M14 17h2"/></svg></button><button class="tab" data-tab="champion" aria-label="Champion matches" title="Champion matches"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3h8v6a4 4 0 0 1-8 0zM8 6H4v2a4 4 0 0 0 4 4M16 6h4v2a4 4 0 0 1-4 4M12 13v6M8 21h8"/></svg></button><button class="tab" data-tab="standings" aria-label="Standings" title="Standings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10h4v10M10 20V4h4v16M16 20v-7h4v7"/></svg></button><button class="tab" data-tab="scoreboard" aria-label="Scoreboard" title="Scoreboard"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="14" r="7"/><path d="M9 2h6M12 7V4M12 14l3 2"/></svg></button></nav>
 <section class="panel active" id="overview"><h2 class="title">Champion Rehab Overview</h2><div class="kpis" id="kpis"></div><h2 class="title">Next Fixture</h2><div id="next"></div><h2 class="title">Latest Results</h2><div class="grid" id="latest"></div></section>
 <section class="panel" id="group"><div class="filters"><input id="search" placeholder="Search team or venue"><select id="round"><option value="ALL">All rounds</option></select></div><div class="grid" id="matches"></div></section>
 <section class="panel" id="champion"><h2 class="title">Champion Rehab Schedule</h2><div class="grid" id="champMatches"></div></section>
